@@ -5,31 +5,73 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render_to_response, render, redirect
 from django.template.context_processors import csrf
-
 from article.forms import CommentForm
+from django.views.generic import TemplateView, ListView
+from django.views.generic.detail import DetailView
+from django.views.generic.edit import FormView
+from django.views.generic.base import View
 from article.models import Article, Comment, LikeUser
 
 
-def articles(request, page_number=1):
-    all_articles = Article.objects.all().order_by('-date')
-    current_page = Paginator(all_articles, 4)
-    page_articles = current_page.page(page_number)
-    context = {
-        'articles': page_articles,
-        'username': auth.get_user(request).username
-    }
-    return render_to_response('articles.html', context=context)
+class ArticleLikeView(View):
+    def get(self, request, *args, **kwargs):
+        article_id = request.GET.get('article')
+        page = request.GET.get('page')
+        user = auth.get_user(request)
+        likeuser=LikeUser.objects.filter(article_id=article_id, user=user)
+        if likeuser.exists():
+            article = Article.objects.get(pk=article_id)
+            article.likes -= 1
+            article.save()
+            like = likeuser.first()
+            like.delete()
+        else:
+            article = Article.objects.get(pk=article_id)
+            article.likes += 1
+            article.save()
+            like = LikeUser()
+            like.article = article
+            like.user = user
+            like.save()
+        return redirect(reverse('articles') + "?page=" + page)
 
 
-def article(request, article_id=1):
-    comment_form = CommentForm()
-    context = {}
-    context.update(csrf(request))
-    context['username'] = auth.get_user(request).username
-    context['article'] = Article.objects.get(id=article_id)
-    context['comments'] = Comment.objects.filter(article_id=article_id).values('id','text','date','user__username')
-    context['comment_form'] = comment_form
-    return render_to_response('article.html', context)
+class ArticleListView(ListView):
+    model = Article
+    template_name = 'articles.html'
+    paginate_by = 4
+
+    def get_queryset(self):
+        queryset = Article.objects.all().order_by('-date')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(ArticleListView, self).get_context_data(**kwargs)
+        context['username'] = auth.get_user(self.request).username
+        return context
+
+
+class ArticleDetailView(DetailView):
+    model = Article
+    template_name = 'article.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(ArticleDetailView, self).get_context_data(**kwargs)
+        context['username'] = auth.get_user(self.request).username
+        comments = Comment.objects.filter(article=kwargs.get('object'))
+        context['comments'] = comments
+        context['comment_form'] = CommentForm()
+        return context
+
+    def post(self, request, *args, **kwargs):
+        if 'pause' not in request.session:
+            comment_form = CommentForm(request.POST)
+            if comment_form.is_valid():
+                comment = comment_form.save(commit=False)
+                comment.article = Article.objects.get(pk=kwargs.get('pk'))
+                comment.user = auth.get_user(request)
+                comment_form.save()
+                return super(ArticleDetailView, self).get(request, *args, **kwargs)
 
 
 def add_like(request, page_number, article_id):
@@ -47,15 +89,3 @@ def add_like(request, page_number, article_id):
     except ObjectDoesNotExist:
         raise Http404
     return reverse('add_like', kwargs={'page': page_number})
-
-
-def add_comment(request, article_id=1):
-    if request.POST and ('pause' not in request.session):
-        comment_form = CommentForm(request.POST)
-        if comment_form.is_valid():
-            comment=comment_form.save(commit=False)
-            comment.article=Article.objects.get(id=article_id)
-            comment.user=auth.get_user(request)
-            comment_form.save()
-    redirect_url = reverse('article_get', args=(article_id,))
-    return redirect(redirect_url)

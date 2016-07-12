@@ -21,4 +21,5 @@ urlpatterns = [
     url(r'^admin/', admin.site.urls),
     url(r'^auth/', include('loginsys.urls')),
     url(r'^', include('article.urls')),
+    url(r'^select2/', include('django_select2.urls')),
 ]

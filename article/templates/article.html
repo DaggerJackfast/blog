@@ -1,19 +1,20 @@
 {% extends 'main.html' %}
 {% load staticfiles %}
+{% block title %}{{ object.title }}{% endblock %}
 {% block content %}
-    <h4>{{ article.date }}</h4>
-    <h2>{{ article.title }}</h2>
-    <p>{{ article.text }}</p>
+    <h4>{{ object.date }}</h4>
+    <h2>{{ object.title }}</h2>
+    <p>{{ object.text }}</p>
     <hr/>
 <div class="large-offset-1 large-8 columns">
     <p>Комментарии:</p>
     {% for comment in comments %}
-        <p><i><b>{{ comment.user__username }}</b></i>: {{ comment.text }}</p>
+        <p><i><b>{{ comment.user.username }}</b></i>: {{ comment.text }}</p>
     {% endfor %}
 
 
 {% if username %}
-    <form action="{% url 'add_comment' article.id %}" method="post">
+    <form action="" method="post">
         {% csrf_token %}
         {{ comment_form }}
         <input type="submit" class="button" value="Добавить комментарий"/>
