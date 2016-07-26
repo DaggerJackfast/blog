@@ -39,7 +39,6 @@ class Article(models.Model):
     tags = models.ManyToManyField(Tag, verbose_name='Теги', blank=True)
     user = models.ManyToManyField(User, through='LikeUser', through_fields=('article', 'user'))
 
-
     class Meta:
         db_table = 'articles'
         verbose_name = 'Статья'
@@ -56,4 +55,3 @@ class LikeUser(models.Model):
 
     class Meta:
         db_table = 'articles_user'
-

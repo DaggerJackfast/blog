@@ -7,16 +7,15 @@ from django.forms import (ModelMultipleChoiceField,
                           NumberInput,
                           MultiWidget,
                           DecimalField,
-                          EmailField)# импортируем форму для модели
+                          EmailField)  # импортируем форму для модели
 from django.utils.encoding import force_text
+from django import forms
 
-from article.models import Comment  # импортируем модель комментариев
-from article.models import Tag
-from article.models import Article
+from article.models import Comment,Tag, Article
 from django_select2.forms import (
-                                  ModelSelect2Widget,
-                                  ModelSelect2TagWidget,
-                                  ModelSelect2MultipleWidget)
+    ModelSelect2Widget,
+    ModelSelect2TagWidget,
+    ModelSelect2MultipleWidget)
 
 
 class TagTaggedWidget(ModelSelect2TagWidget):
@@ -25,11 +24,11 @@ class TagTaggedWidget(ModelSelect2TagWidget):
     def create_value(self, value):
         self.get_queryset().create(title=value)
 
-
-class CommentForm(ModelForm):  # форма для модели комментариев Comment
+class CommentForm(ModelForm):
     class Meta:
         model = Comment
         fields = ['text']
+
 
 # -------------------------------------------------
 class TagNameWidget(ModelSelect2MultipleWidget):
@@ -38,11 +37,11 @@ class TagNameWidget(ModelSelect2MultipleWidget):
         'name__icontains'
     ]
 
-    def label_from_instance(self,obj):# управление текстовым представлением объекта
-        return force_text(obj.name).lower() # уменьшает слова текста
+    def label_from_instance(self, obj):
+        return force_text(obj.name).lower()
+
 
 class EasyArticeModelForm(ModelForm):
-
     class Meta:
         model = Article
         widgets = {
@@ -51,30 +50,22 @@ class EasyArticeModelForm(ModelForm):
         exclude = ['likes']
 
 
-
 # -----------------------------------------------------------
 class ArticleModelForm(ModelForm):
-
     class Meta:
         model = Article
-        exclude=[]
+        exclude = []
         widgets = {
-            'tags':TagTaggedWidget,
+            'tags': TagTaggedWidget,
         }
-
-
 
 
 class ArticleModelFormSelectForm(ModelForm):
     tags = ModelMultipleChoiceField(widget=ModelSelect2MultipleWidget(
-                                    queryset=Tag.objects.all(),
-                                    search_fields=['name__icontains'],
-                                    ), queryset= Tag.objects.all(),required=False)
+        queryset=Tag.objects.all(),
+        search_fields=['name__icontains'],
+    ), queryset=Tag.objects.all(), required=False)
 
     class Meta:
         model = Article
         exclude = []
-
-
-
-

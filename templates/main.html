@@ -5,6 +5,8 @@
     <meta charset="UTF-8">
 <title>{% block title %}{% endblock %}</title>
     <link rel="stylesheet" type="text/css" href="{% static 'css/foundation.css' %}"/>
+{% block additional_css %}{% endblock %}
+{% block additional_js %}{% endblock %}
 </head>
 <body>
 <div class="top-bar">

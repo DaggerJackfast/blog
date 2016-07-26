@@ -3,17 +3,13 @@ from django.contrib import admin
 from article.models import Article, Comment,Tag
 from article.forms import ArticleModelForm,EasyArticeModelForm,ArticleModelFormSelectForm
 
-class ArticleInline(admin.StackedInline):  # класс для изменения вида инлайнов Commebt
+class ArticleInline(admin.StackedInline):
     model = Comment
     extra = 1
 
 
-class ArticleAdmin(admin.ModelAdmin):  # класс для регулировки полей админки в Article
+class ArticleAdmin(admin.ModelAdmin):
     form = ArticleModelFormSelectForm
-
-
-    #fields = ['title', 'text', 'date','tags']
-    #inlines = [ArticleInline]
     line_filter = ['date']
 
 admin.site.register(Article,ArticleAdmin)

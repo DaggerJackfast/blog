@@ -6,19 +6,28 @@
     <h2>{{ object.title }}</h2>
     <p>{{ object.text }}</p>
     <hr/>
-<div class="large-offset-1 large-8 columns">
-    <p>Комментарии:</p>
-    {% for comment in comments %}
-        <p><i><b>{{ comment.user.username }}</b></i>: {{ comment.text }}</p>
-    {% endfor %}
+    <div class="large-offset-1 large-8 columns">
+        <p>Комментарии:</p>
+        <div id="comments">
+            {% for comment in comments %}
+                <p><i><b>{{ comment.user.username }}</b></i>: {{ comment.text }}</p>
+            {% endfor %}
+        </div>
+        {% if username %}
+            <form id="comment-form" action="{% url 'article_comment' pk=object.pk %}" method="post">
+                {% csrf_token %}
+                {{ comment_form }}
 
+                <input type="submit" class="button" value="Добавить комментарий"/>
+            </form>
 
-{% if username %}
-    <form action="" method="post">
-        {% csrf_token %}
-        {{ comment_form }}
-        <input type="submit" class="button" value="Добавить комментарий"/>
-    </form>
-{% endif %}
-</div>
+        {% endif %}
+    </div>
+
 {% endblock content %}
+{% block additional_js %}
+    <script type="text/javascript" src="{% static 'js/vendor/jquery.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
+    <script type="text/javascript" src="{% static 'js/article_comment.js' %}"></script>
+
+{% endblock %}

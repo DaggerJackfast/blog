@@ -5,20 +5,22 @@ from django.core.paginator import Paginator
 from django.http import Http404
 from django.shortcuts import render_to_response, render, redirect
 from django.template.context_processors import csrf
+from django.http import JsonResponse
 from article.forms import CommentForm
 from django.views.generic import TemplateView, ListView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import FormView
-from django.views.generic.base import View
+from django.views.generic.edit import FormView, ProcessFormView
+from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
+from django.core.serializers import serialize
 from article.models import Article, Comment, LikeUser
+from django.views.decorators.csrf import csrf_protect
 
 
-class ArticleLikeView(View):
+class ArticleLikeView(TemplateView):
     def get(self, request, *args, **kwargs):
-        article_id = request.GET.get('article')
-        page = request.GET.get('page')
-        user = auth.get_user(request)
-        likeuser=LikeUser.objects.filter(article_id=article_id, user=user)
+        article_id = kwargs.get('pk')
+        user = request.user
+        likeuser = LikeUser.objects.filter(article_id=article_id, user=user)
         if likeuser.exists():
             article = Article.objects.get(pk=article_id)
             article.likes -= 1
@@ -33,13 +35,14 @@ class ArticleLikeView(View):
             like.article = article
             like.user = user
             like.save()
-        return redirect(reverse('articles') + "?page=" + page)
+        response = {'likenumber': article.likes}
+        return JsonResponse(response)
 
 
 class ArticleListView(ListView):
     model = Article
     template_name = 'articles.html'
-    paginate_by = 4
+    paginate_by = 2
 
     def get_queryset(self):
         queryset = Article.objects.all().order_by('-date')
@@ -47,7 +50,7 @@ class ArticleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleListView, self).get_context_data(**kwargs)
-        context['username'] = auth.get_user(self.request).username
+        context['username'] = self.request.user.username
         return context
 
 
@@ -57,11 +60,14 @@ class ArticleDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
-        context['username'] = auth.get_user(self.request).username
+        context['username'] = self.request.user.username
         comments = Comment.objects.filter(article=kwargs.get('object'))
         context['comments'] = comments
         context['comment_form'] = CommentForm()
         return context
+
+
+class CommentView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         if 'pause' not in request.session:
@@ -69,23 +75,12 @@ class ArticleDetailView(DetailView):
             if comment_form.is_valid():
                 comment = comment_form.save(commit=False)
                 comment.article = Article.objects.get(pk=kwargs.get('pk'))
-                comment.user = auth.get_user(request)
+                comment.user = self.request.user
                 comment_form.save()
-                return super(ArticleDetailView, self).get(request, *args, **kwargs)
-
-
-def add_like(request, page_number, article_id):
-    try:
-        if article_id in request.COOKIES:
-            reverse('add_like', kwargs={'page': page_number})
-        else:
-            get_article = Article.objects.get(id=article_id)
-            get_article.likes += 1
-            get_article.user = auth.get_user(request)
-            get_article.save()
-            response = reverse('add_like', kwargs={'page': page_number})
-            response.set_cookie(article_id, 'test')
-            return response
-    except ObjectDoesNotExist:
-        raise Http404
-    return reverse('add_like', kwargs={'page': page_number})
+                d={'status':'success',
+                                     'username':self.request.user.username,}
+                print(d)
+                return JsonResponse({'status':'success',
+                                     'username':self.request.user.username,})
+            else:
+                return JsonResponse({'status':'error'})
