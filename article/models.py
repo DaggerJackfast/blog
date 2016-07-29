@@ -4,6 +4,7 @@ from django.contrib.auth.forms import User
 from django.db import models
 
 
+
 class Comment(models.Model):
     text = models.TextField(verbose_name='Текст комментария')
     date = models.DateTimeField(verbose_name='Дата комментирования', auto_now_add=True)
@@ -36,6 +37,7 @@ class Article(models.Model):
     text = models.TextField(verbose_name='Текст')
     date = models.DateTimeField(verbose_name='Дата публикации')
     likes = models.IntegerField(default=0, verbose_name='Лайки')
+
     tags = models.ManyToManyField(Tag, verbose_name='Теги', blank=True)
     user = models.ManyToManyField(User, through='LikeUser', through_fields=('article', 'user'))
 
@@ -44,14 +46,17 @@ class Article(models.Model):
         verbose_name = 'Статья'
         verbose_name_plural = 'Статьи'
 
+
     def __unicode__(self):
         return self.title
 
 
 class LikeUser(models.Model):
+
     article = models.ForeignKey(Article)
     user = models.ForeignKey(User)
     date = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         db_table = 'articles_user'
+

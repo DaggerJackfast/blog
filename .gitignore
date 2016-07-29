@@ -11,3 +11,4 @@ application.macosx
 *.pyc
 /.idea
 db.sqlite3
+

@@ -1,5 +1,6 @@
 # -*- coding:utf-8 -*-
 from django.shortcuts import render, render_to_response, redirect
+
 from django.template.context_processors import csrf
 from django.contrib.auth.forms import AuthenticationForm, UserCreationForm
 from django.utils.http import is_safe_url
