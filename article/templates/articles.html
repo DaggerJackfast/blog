@@ -1,23 +1,34 @@
-{% extends 'main.html' %}
+{% extends 'base.html' %}
 {% load staticfiles %}
 {% block title %}Блог{% endblock %}
 {% block content %}
-    <div class="large-8 column" id="content-page">
+    <div id="content-page">
+        {% block page_title %}
+        {% endblock %}
         {% for article in object_list %}
-            <h6>Дата публикации: {{ article.date }}</h6>
-            <h4><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a></h4>
-            <p>{{ article.text|slice:"300" }}...</p>
-            <p><a class='like-link' href="{% url 'article_like' pk=article.pk %}" onclick="return false;"><img
-                    src="{% static 'like.jpg' %}" alt="Like" width="25px"
-                    height="25px"></a><span>{{ article.likes }}</span></p>
+            <h6>Автор: {{ article.author.get_official_name }}, Дата публикации: {{ article.date_created }} </h6>
+            <h3><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a> {% block article_edit %}{% endblock %}</h3>
+            <p>Теги:
+                {% for tag in article.tags.all %}
+                    <span class="label label-primary">
+                    <a href="{% url 'tags' pk=tag.id %}" class="link-text-white">{{ tag }}</a>
 
+                    </span>
+                    {% if not forloop.last %}
+                        &nbsp
+                    {% endif %}
+                {% endfor %}</p>
+            <p>{{ article.text|safe|slice:"300" }}...<a href="{% url 'article_detail' pk=article.pk %}"
+                                                         class="btn btn-xs btn-primary text-bold">Читать далее</a></p>
 
+            <p><a class='like-link' href="{% url 'article_like' pk=article.pk %}" onclick="return false;"><i
+                    class="fa fa-thumbs-o-up" aria-hidden="true"></i></a> <span>{{ article.likes }}</span></p>
             <hr/>
         {% endfor %}
     </div>
-    <div class="row">
+    <div>
 
-        <div class="large-10 large-offset-2 columns">
+        <div class="col-md-offset-5">
             {% if is_paginated %}
                 <ul class="pagination">
                     {% if page_obj.has_previous %}
@@ -31,7 +42,7 @@
                             &nbsp;
                         {% endif %}
                         {% if page == page_obj.number %}
-                            <li class="current">
+                            <li class="active">
                                 <a href="?page={{ page }}">
                                     {{ page }}
                                 </a></li>

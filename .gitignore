@@ -11,4 +11,5 @@ application.macosx
 *.pyc
 /.idea
 db.sqlite3
+tasks.txt
 

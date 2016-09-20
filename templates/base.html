@@ -1,0 +1,109 @@
+{% load staticfiles %}
+{% load thumbnail %}
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+
+    <title>{% block title %}{% endblock %}</title>
+
+    <link rel="stylesheet" href="{% static 'css/bootstrap/css/bootstrap.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/font-awesome/css/font-awesome.min.css' %}">
+    <link rel="stylesheet" href="{% static 'css/main.css' %}">
+
+    {#        <link rel="stylesheet" href="{% static 'css/bootstrap.readble.css' %}">#}
+    {#        <link rel="stylesheet" href="{% static 'css/blog.css' %}">#}
+    {#        <link rel="stylesheet" href="{% static 'css/bootstrap.journal.css' %}">#}
+    <script src="{% static 'js/jquery.js' %}"></script>
+    <script src="{% static 'css/bootstrap/js/bootstrap.min.js' %}"></script>
+
+    {% block additional_css %}{% endblock %}
+    {% block additional_js %}{% endblock %}
+
+</head>
+<body>
+<nav class="navbar navbar-static-top navbar-default" role="navigation">
+    <div class="container">
+        <!-- Brand and toggle get grouped for better mobile display -->
+        <div class="navbar-header">
+            <button type="button" class="navbar-toggle" data-toggle="collapse"
+                    data-target="#bs-example-navbar-collapse-1">
+                <span class="sr-only">Toggle navigation</span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+                <span class="icon-bar"></span>
+            </button>
+            <a class="navbar-brand" href="{% url 'main' %}"><i class="fa fa-book" aria-hidden="true"></i> My blog</a>
+        </div>
+
+        <!-- Collect the nav links, forms, and other content for toggling -->
+        <div class="collapse navbar-collapse" id="bs-example-navbar-collapse-1">
+            <ul class="nav navbar-nav">
+                <li {% if current_menu == 'home' %}class="active"{% endif %}>
+                    <a href="{% url 'main' %}"><i class="fa fa-home" aria-hidden="true"></i> Главная</a></li>
+                <li {% if current_menu == 'new' %}class="active"{% endif %}>
+                    <a href="{% url 'new_articles' %}"><i class="fa fa-caret-square-o-up" aria-hidden="true"></i> Новое</a></li>
+                <li><a href="#"><i class="fa fa-flag-checkered" aria-hidden="true"></i> Популярное</a></li>
+                <li><a href="#"><i class="fa fa-suitcase" aria-hidden="true"></i> Архив</a></li>
+                <li><a href="#"><i class="fa fa-bookmark-o" aria-hidden="true"></i> О нас</a></li>
+
+            </ul>
+
+            <ul class="nav navbar-nav navbar-right">
+                <form class="navbar-form navbar-left" role="search">
+                    <div class="form-group">
+                        <input type="text" class="form-control" placeholder="Поиск">
+                    </div>
+                    <button type="submit" class="btn btn-primary">Отправить</button>
+                </form>
+                <li><a href="#"><i class="fa fa-users" aria-hidden="true"></i> Друзья</a></li>
+                {% if user.is_authenticated %}
+                    <li class="dropdown">
+                        <a href="#" class="dropdown-toggle" data-toggle="dropdown">
+                            {{ user.get_official_name }}
+                            <img src="{{ user.avatar|thumbnail_url:'header' }}" alt="" class="img-circle">
+                        </a>
+                        <ul class="dropdown-menu">
+                            <li><a href="{% url 'profile' %}"><i class="fa fa-eye" aria-hidden="true"></i>
+                                Просмотреть профиль</a></li>
+                            <li><a href="{% url 'profile_edit' %}"><i class="fa fa-wrench" aria-hidden="true"></i>
+                                Настроить
+                                профиль</a></li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'user_articles' %}"><i class="fa fa-file-text-o" aria-hidden="true"></i> Ваши статьи</a></li>
+                            <li><a href="{% url 'article_add' %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Написать статью</a>
+                            </li>
+                            <li class="divider"></li>
+                            <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i> Выйти</a>
+                            </li>
+                        </ul>
+                    </li>
+                {% else %}
+                    <li><a href="{% url 'login' %}">Войти</a></li>
+                {% endif %}
+
+
+            </ul>
+        </div>
+    </div>
+</nav>
+<div class="container">
+    <h1><a href="{% url 'main' %}">Мой блог</a></h1>
+</div>
+
+<div class="container">
+    {% block content %}
+    {% endblock %}
+    {% block login %}
+    {% endblock %}
+</div>
+
+
+<div id="footer">
+    <div class="container">
+        <p class="text-muted text-center">My Blog 2016</p>
+    </div>
+</div>
+
+</body>
+</html>

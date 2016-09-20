@@ -1,0 +1,10 @@
+{% extends 'articles.html' %}
+{% load staticfiles %}
+{% load thumbnail %}
+{% block page_title %}
+    <div class="page-header page-title">
+        <h2>
+            <div>Вы смотрите категорию <span class="label label-primary">{{ page_title }}</span></div>
+        </h2>
+    </div>
+{% endblock %}

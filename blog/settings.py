@@ -35,11 +35,37 @@ INSTALLED_APPS = [
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
-    # 'debug_toolbar',
-    'django_select2',
+    'easy_thumbnails',
+    'ckeditor',
+    'ckeditor_uploader',
     'article',
-    'loginsys',
+    'authsystem',
+    # 'loginsys'
+    'customuser',
+
 ]
+AUTH_USER_MODEL = 'customuser.CustomUser'
+AUTHENTICATION_BACKENDS = (
+    "django.contrib.auth.backends.ModelBackend",
+)
+
+MANAGERS = (('admin', 'jackfast.dagger@yandex.ru'))
+EMAIL_HOST = 'smtp.yandex.ru'
+EMAIL_HOST_USER = 'jackfast.dagger@yandex.ru'
+EMAIL_HOST_PASSWORD = 'adminder123456789'
+EMAIL_PORT = 587
+EMAIL_USE_TLS = True
+DEFAULT_FROM_EMAIL = 'jackfast.dagger@yandex.ru'
+# EMAIL_USE_TLS = True
+# DEFAULT_FROM_EMAIL = 'admin@gmail.com'
+# SERVER_EMAIL = 'admin@gmail.com'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_HOST_USER = 'admin@gmail.com'
+# EMAIL_HOST_PASSWORD = 'admin123##'
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
+EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'media/temp/email/')
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -51,6 +77,28 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 ]
+
+THUMBNAIL_ALIASES = {
+    '': {
+        'header': {'size': (22, 22), 'crop': True},
+        'userprofile': {'size': (300, 300), 'crop': True},
+    },
+}
+
+CKEDITOR_UPLOAD_PATH = 'articles/uploads/'
+CKEDITOR_CONFIGS = {
+    'default': {
+        # 'toolbar': 'full',
+        'height': 400,
+        'width': '100%',
+    },
+}
+
+from easy_thumbnails.conf import Settings as thumbnail_settings
+
+THUMBNAIL_PROCESSORS = (
+                           'image_cropping.thumbnail_processors.crop_corners',
+                       ) + thumbnail_settings.THUMBNAIL_PROCESSORS
 
 ROOT_URLCONF = 'blog.urls'
 
@@ -78,11 +126,10 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.postgresql_psycopg2',
+        'ENGINE': 'django.db.backends.mysql',
         'NAME': 'blog',
         'USER': 'djangouser',
         'PASSWORD': 'admin123',
-        'HOST': 'localhost',
         'PORT': '',
     }
 }
@@ -108,7 +155,7 @@ AUTH_PASSWORD_VALIDATORS = [
 # Internationalization
 # https://docs.djangoproject.com/en/1.9/topics/i18n/
 
-LANGUAGE_CODE = 'RU-ru'
+LANGUAGE_CODE = 'ru-ru'
 
 TIME_ZONE = 'Asia/Bishkek'
 
@@ -122,11 +169,12 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/1.9/howto/static-files/
 
 STATIC_URL = '/static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static/collectstatic/')
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, 'static'),
 )
-
+MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
+MEDIA_URL = '/media/'
 LOGIN_URL = 'login'
 LOGOUT_URL = 'logout'
 LOGIN_REDIRECT_URL = 'articles'
-

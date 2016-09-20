@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load thumbnail %}
+{% block title %}
+    Редактирование профиля
+{% endblock %}
+{% block additional_css %}
+    <link rel="stylesheet" href="{% static 'cropper/css/cropper.min.css' %}">
+    <link rel="stylesheet" href="{% static 'cropper/css/main.css' %}">
+    <style>
+        img {
+            max-width: 100%;
+        }
+
+        .cropper-view-box,
+        .cropper-face {
+            border-radius: 50%;
+        }
+    </style>
+{% endblock %}
+{% block additional_js %}
+    <!-- HTML5 shim and Respond.js for IE8 support of HTML5 elements and media queries -->
+    <!--[if lt IE 9]>
+        <script src="https://oss.maxcdn.com/html5shiv/3.7.2/html5shiv.min.js"></script>
+        <script src="https://oss.maxcdn.com/respond/1.4.2/respond.min.js"></script>
+      <![endif]-->
+
+    <script src="{% static 'cropper/js/cropper.min.js' %}"></script>
+    <script src="{% static 'cropper/js/main.js' %}"></script>
+    <script src="{% static 'js/csrf.js' %}"></script>
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <h1 class="page-header">Изменение профиля</h1>
+        <div class="row">
+            <!-- left column -->
+            <div class="col-md-4 col-sm-6 col-xs-12 container" id="crop-avatar">
+
+                <div class="text-center" id="avatar-view" data-toggle="tooltip" data-placement="right"
+                     title="Для изменения изображения нажмите по картинке">
+                    <img src="{{ user.avatar|thumbnail_url:'userprofile' }}" class="avatar img-circle img-thumbnail"
+                         alt="Avatar">
+                </div>
+
+                <!-- Cropping modal -->
+                <div class="modal fade" id="avatar-modal" aria-hidden="true" aria-labelledby="avatar-modal-label"
+                     role="dialog"
+                     tabindex="-1">
+                    <div class="modal-dialog modal-lg">
+                        <div class="modal-content">
+                            <form class="avatar-form" action="{% url 'change_avatar' %}" enctype="multipart/form-data"
+                                  method="post">
+                                <div class="modal-header">
+                                    <button type="button" class="close" data-dismiss="modal">&times;</button>
+                                    <h4 class="modal-title" id="avatar-modal-label">Изменение аватара</h4>
+                                </div>
+                                <div class="modal-body">
+                                    <div class="avatar-body">
+                                        {% csrf_token %}
+                                        <!-- Upload image and data -->
+                                        <div class="avatar-upload">
+                                            <input type="hidden" class="avatar-src" name="avatar_src">
+                                            <input type="hidden" class="avatar-data" name="avatar_data">
+                                            <div class="well well-sm">
+                                                <label for="avatarInput">Фотография</label>
+                                                <input type="file" class="avatar-input" id="avatarInput"
+                                                       name="avatar_file">
+                                            </div>
+                                        </div>
+
+                                        <!-- Crop and preview -->
+                                        <div class="row">
+                                            <div class="col-md-9">
+                                                <div class="avatar-wrapper"></div>
+                                            </div>
+                                            <div class="col-md-3">
+                                                <div class="avatar-preview preview-lg"></div>
+                                            </div>
+                                        </div>
+
+                                         <div>
+                                             <span id="dataspan"></span>
+                                         </div>
+                                    </div>
+                                </div>
+
+                                <div class="modal-footer">
+                                    <div class="col-md-3">
+                                        <button type="submit" class="btn btn-primary btn-block avatar-save">
+                                            Сохранить
+                                        </button>
+                                    </div>
+                                    <button type="button" class="btn btn-default" data-dismiss="modal">Закрыть</button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                </div><!-- /.modal -->
+
+                <!-- Loading state -->
+                <div class="loading" aria-label="Loading" role="img" tabindex="-1"></div>
+            </div>
+
+
+            <!-- edit form column -->
+            <div class="col-md-8 col-sm-6 col-xs-12 personal-info">
+                {% if messages %}
+                    <div class="alert alert-info alert-dismissable">
+                        <a class="panel-close close" data-dismiss="alert">×</a>
+                        <i class="fa fa-coffee"></i>
+                        {% for message in messages %}
+                            {{ message }}
+                        {% endfor %}
+                    </div>
+                {% endif %}
+
+                <h3>Персональная информация</h3>
+                <form class="form-horizontal" id="profile-edit" action="{% url 'profile_edit' %}" method="post">
+                    {% if form.non_field_errors %}
+                        <div class="alert alert-danger alert-dismissable">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            <i class="fa fa-exclamation-triangle"></i>
+                            {% for error in form.non_field_errors %}
+                                {{ error|escape }}
+                            {% endfor %}
+                        </div>
+                    {% endif %}
+
+
+                    <div class="form-group">
+                        <label class="col-lg-3 control-label">Email:</label>
+                        <div class="col-lg-8">
+                            <p class="form-control-static">
+                                {{ user.email }}
+                            </p>
+                        </div>
+                    </div>
+                    {% csrf_token %}
+                    {% for field in form %}
+                        <div class="form-group">
+                            <label for="{{ field.id_for_label }}"
+                                   class="col-lg-3 control-label">{{ field.label }}</label>
+                            <div class="col-lg-8">
+                                {{ field }}
+                                {% if field.errors|length > 0 %}
+                                    <div class="col-sm-offset-3">
+                                        {% for error in field.errors %}
+                                            <p class="text-danger">
+                                                * {{ error }}
+                                            </p>
+                                        {% endfor %}
+                                    </div>
+                                {% endif %}
+                            </div>
+                        </div>
+                    {% endfor %}
+                    <div class="form-group">
+                        <label class="col-md-3 control-label"></label>
+                        <div class="col-md-8">
+
+                            <input class="btn btn-primary" value="Сохранить изменения" type="submit">
+
+                            <input class="btn btn-default" value="Отмена" type="reset">
+                            <a href="{% url 'change_password' %}" class="">Изменить пароль</a>
+                            <a href="{% url 'profile_delete' %}" class="text-danger">Удалить профиль</a>
+                        </div>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+{% endblock %}

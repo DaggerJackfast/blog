@@ -1,35 +1,39 @@
-{% extends 'main.html' %}
-
+{% extends 'base.html' %}
 {% load staticfiles %}
+{% load thumbnail %}
 {% block title %}{{ object.title }}{% endblock %}
 {% block content %}
-    <h4>{{ object.date }}</h4>
+    <h4>Автор: {{ object.author.get_official_name }}</h4>
+    <h5> <em>Дата публикации: {{ object.date_created }}</em></h5>
     <h2>{{ object.title }}</h2>
-    <p>{{ object.text }}</p>
+    <p>Теги:
+        {% for tag in object.tags.all %}
+            <a href="{% url 'tags' pk=tag.pk %}">{{ tag.tag_name }}</a>{% if not forloop.last %}, {% else %}.{% endif %}{% endfor %}</p>
+    <p>{{ object.text|safe }}</p>
     <hr/>
-    <div class="large-offset-1 large-8 columns">
+    <div class="container">
         <p>Комментарии:</p>
         <div id="comments">
             {% for comment in comments %}
-                <p><i><b>{{ comment.user.username }}</b></i>: {{ comment.text }}</p>
+                <p><i><b>{{ comment.user.get_official_name }}</b></i>: {{ comment.text }}</p>
             {% endfor %}
         </div>
-        {% if username %}
-            <form id="comment-form" action="{% url 'article_comment' pk=object.pk %}" method="post">
+        {% if user.is_authenticated %}
+            <form id="comment-form" class="col-md-8" action="{% url 'article_comment' pk=object.pk %}" method="post">
                 {% csrf_token %}
-                {{ comment_form }}
-
-                <input type="submit" class="button" value="Добавить комментарий"/>
+                <div class="form-group">
+                    <label for="{{ comment_form.text.id_for_label }}">{{ comment_form.text.label }}</label>
+                    {{ comment_form.text }}
+                </div>
+                <input type="submit" class="btn btn-primary" value="Добавить комментарий"/>
             </form>
-
         {% endif %}
     </div>
-
 {% endblock content %}
 {% block additional_js %}
     <script type="text/javascript" src="{% static 'js/vendor/jquery.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/csrf.js' %}"></script>
     <script type="text/javascript" src="{% static 'js/article_comment.js' %}"></script>
-
+    {#    <script type="text/javascript" src="{% static 'js/update_comment.js' %}"></script>#}
 {% endblock %}
 

@@ -1,19 +1,16 @@
-from django.contrib import auth
-from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.core.paginator import Paginator
-from django.http import Http404
-from django.shortcuts import render_to_response, render, redirect
-from django.template.context_processors import csrf
+from datetime import date
+
+from django.contrib import messages
 from django.http import JsonResponse
-from article.forms import CommentForm
+from django.urls import reverse
+from django.views.generic import FormView
 from django.views.generic import TemplateView, ListView
+from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
-from django.views.generic.edit import FormView, ProcessFormView
-from django.contrib.auth.mixins import LoginRequiredMixin, AccessMixin
-from django.core.serializers import serialize
-from article.models import Article, Comment, LikeUser
-from django.views.decorators.csrf import csrf_protect
+from django.views.generic.edit import FormMixin
+
+from article.forms import CommentForm, ArticleForm
+from article.models import Article, Comment, LikeUser, Tag
 
 
 class ArticleLikeView(TemplateView):
@@ -42,16 +39,32 @@ class ArticleLikeView(TemplateView):
 class ArticleListView(ListView):
     model = Article
     template_name = 'articles.html'
-    paginate_by = 2
+    paginate_by = 4
+    current_menu = 'home'
 
     def get_queryset(self):
-        queryset = Article.objects.all().order_by('-date')
+        queryset = Article.objects.all().order_by('-date_created')
         return queryset
 
     def get_context_data(self, **kwargs):
         context = super(ArticleListView, self).get_context_data(**kwargs)
-        context['username'] = self.request.user.username
+        context['user'] = self.request.user
+        context['current_menu'] = self.current_menu
         return context
+
+
+class ArticleNewView(ArticleListView):
+    template_name = 'new_articles.html'
+    current_menu = 'new'
+
+
+class ArticleUserView(ArticleListView):
+    template_name = 'user_articles.html'
+    current_menu = 'user_articles'
+
+    def get_queryset(self):
+        queryset = Article.objects.filter(author=self.request.user).order_by('-date_created')
+        return queryset
 
 
 class ArticleDetailView(DetailView):
@@ -60,7 +73,6 @@ class ArticleDetailView(DetailView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleDetailView, self).get_context_data(**kwargs)
-        context['username'] = self.request.user.username
         comments = Comment.objects.filter(article=kwargs.get('object'))
         context['comments'] = comments
         context['comment_form'] = CommentForm()
@@ -68,6 +80,10 @@ class ArticleDetailView(DetailView):
 
 
 class CommentView(TemplateView):
+    def get(self, request, *args, **kwargs):
+        comment = Comment.objects.filter(article_id=kwargs.get('pk')).values_list('user', 'text')
+        jsonresponse = JsonResponse({'result': list(comment)})
+        return jsonresponse
 
     def post(self, request, *args, **kwargs):
         if 'pause' not in request.session:
@@ -77,10 +93,63 @@ class CommentView(TemplateView):
                 comment.article = Article.objects.get(pk=kwargs.get('pk'))
                 comment.user = self.request.user
                 comment_form.save()
-                d={'status':'success',
-                                     'username':self.request.user.username,}
-                print(d)
-                return JsonResponse({'status':'success',
-                                     'username':self.request.user.username,})
+                return JsonResponse({'status': 'success',
+                                     'user': self.request.user.get_official_name(),})
             else:
-                return JsonResponse({'status':'error'})
+                return JsonResponse({'status': 'error'})
+
+
+class TagView(ListView):
+    model = Article
+    template_name = 'tag_articles.html'
+    paginate_by = 4
+
+    def get_queryset(self):
+        queryset = Tag.objects.get(pk=self.kwargs.get('pk')).article_set.all().order_by('-date_created')
+        return queryset
+
+    def get_context_data(self, **kwargs):
+        context = super(TagView, self).get_context_data(**kwargs)
+        context['page_title'] = Tag.objects.get(pk=self.kwargs.get('pk'))
+        return context
+
+
+class ArticleActionMixin(FormMixin):
+    def get_context_data(self, **kwargs):
+        context = super(ArticleActionMixin, self).get_context_data(**kwargs)
+        context['title'] = self.title
+        context['action'] = self.action
+        return context
+
+
+class ArticleAddView(FormView, ArticleActionMixin):
+    form_class = ArticleForm
+    template_name = 'article_form.html'
+    title = 'Добавление статьи'
+    action = 'Добавить'
+
+    def form_valid(self, form):
+        new_article = form.save(commit=False)
+        new_article.author = self.request.user
+        new = form.save()
+
+        return super(ArticleAddView, self).form_valid(form)
+
+    def get_success_url(self):
+        return reverse('main')
+
+
+class ArticleUserEditView(UpdateView, ArticleActionMixin):
+    template_name = 'article_form.html'
+    form_class = ArticleForm
+    model = Article
+    title = 'Редактирование статьи'
+    action = 'Редактировать'
+
+    def get_success_url(self):
+        return reverse('article_detail', kwargs={'pk': self.kwargs.get('pk')})
+
+    def form_valid(self, form, **kwargs):
+        f = form.save()
+        messages.add_message(request=self.request, level=messages.SUCCESS, message='Статья успешно изменена')
+        return super(ArticleUserEditView, self).form_valid(form)

@@ -1,0 +1,82 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% load thumbnail %}
+{% block title %}
+    {{ user.firstname }} {{ user.lastname }} - Профиль
+{% endblock %}
+{% block content %}
+
+    <div class="container">
+        <div class="row">
+            <div class="col-xs-12 col-sm-12 col-md-6 col-lg-6 col-xs-offset-0 col-sm-offset-0 col-md-offset-3 col-lg-offset-3 toppad">
+                <div class="panel panel-info">
+                    <div class="panel-heading">
+                        <h3 class="panel-title">Информация пользователя</h3>
+                    </div>
+                    <div class="panel-body">
+                        <div class="row">
+                            <div align="center">
+                                <img alt="{{ user.firstname }}"
+                                     src="{{ user.avatar | thumbnail_url:'userprofile' }}"
+                                     width="300"
+                                     height="300"
+                                     class="img-circle img-responsive img-thumbnail">
+                            </div>
+                            <div class="profile-information">
+                                <table class="table table-user-information">
+                                    <tbody>
+                                    <tr>
+                                        <td>Имя:</td>
+                                        <td>{{ user.firstname }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Фамилия:</td>
+                                        <td>{{ user.lastname }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Отчество:</td>
+                                        <td>{{ user.middlename }}</td>
+                                    </tr>
+                                    <tr>
+                                        <td>Email:</td>
+                                        <td><a href="mailto:info@support.com">{{ user.email }}</a></td>
+                                    </tr>
+                                    <tr>
+                                        <td>Пол:</td>
+                                        <td>
+                                            {% if user.gender == None %}
+                                                ----------
+                                            {% elif user.gender %}
+                                                Мужской
+                                            {% else %}
+                                                Женский
+                                            {% endif %}
+                                        </td>
+                                    </tr>
+                                    <tr>
+                                        <td>Дата рождения:</td>
+                                        <td>{{ user.date_of_birth }}</td>
+                                    </tr>
+                                    <tr>
+                                    <tr>
+                                        <td>Дата регистрации:</td>
+                                        <td>{{ user.register_date }}</td>
+                                    </tr>
+                                    </tbody>
+                                </table>
+
+                            </div>
+                        </div>
+                    </div>
+                    <div class="panel-footer">
+                        <a href="{% url 'profile_edit' %}" class="btn btn-warning pull-right">
+                            <i class="fa fa-cog" aria-hidden="true"></i> Редактировать профиль</a>
+                        <a href="{% url 'profile_delete' %}" class="btn btn-danger"><i class="fa fa-times"
+                                                                                       aria-hidden="true"></i> Удалить
+                            профиль</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+{% endblock %}

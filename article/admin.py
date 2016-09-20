@@ -2,7 +2,6 @@
 from django.contrib import admin
 
 from article.models import Article, Comment,Tag
-from article.forms import ArticleModelForm,EasyArticeModelForm,ArticleModelFormSelectForm
 
 class ArticleInline(admin.StackedInline):
 
@@ -12,10 +11,14 @@ class ArticleInline(admin.StackedInline):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    form = ArticleModelFormSelectForm
+    # form = ArticleModelFormSelectForm
     line_filter = ['date']
+    list_display = ('title','date_created','date_updated','author',)
+    search_fields = ['title']
 
+class TagAdmin(admin.ModelAdmin):
+    search_fields = ['tag_name']
 admin.site.register(Article,ArticleAdmin)
-admin.site.register(Tag)
+admin.site.register(Tag,TagAdmin)
 admin.site.register(Comment)
 
