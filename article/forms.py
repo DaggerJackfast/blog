@@ -6,6 +6,12 @@ from ckeditor import widgets
 from article.models import Comment, Tag, Article
 
 
+
+class ArticleAdminForm(forms.ModelForm):
+    class Meta:
+        model=Article
+        fields = ['title', 'text', 'tags','author']
+
 class CommentForm(forms.ModelForm):
     text = forms.CharField(label='Текст комментария', required=True, widget=forms.Textarea(
         attrs={'class': 'form-control', 'placeholder': 'Введите текст комментария'}))

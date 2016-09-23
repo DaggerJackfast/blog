@@ -1,6 +1,7 @@
 # -*- coding:utf-8 -*-
 from django.contrib import admin
 
+from article.forms import ArticleAdminForm
 from article.models import Article, Comment,Tag
 
 class ArticleInline(admin.StackedInline):
@@ -11,7 +12,7 @@ class ArticleInline(admin.StackedInline):
 
 
 class ArticleAdmin(admin.ModelAdmin):
-    # form = ArticleModelFormSelectForm
+    form = ArticleAdminForm
     line_filter = ['date']
     list_display = ('title','date_created','date_updated','author',)
     search_fields = ['title']

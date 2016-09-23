@@ -58,6 +58,15 @@ class ArticleNewView(ArticleListView):
     current_menu = 'new'
 
 
+class ArticlePopularView(ArticleListView):
+    template_name = 'popular_articles.html'
+    current_menu = 'popular'
+
+    def get_queryset(self):
+        queryset = Article.objects.all().order_by('-likes')
+        return queryset
+
+
 class ArticleUserView(ArticleListView):
     template_name = 'user_articles.html'
     current_menu = 'user_articles'
