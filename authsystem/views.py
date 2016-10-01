@@ -11,7 +11,7 @@ from django.utils.http import urlsafe_base64_encode, urlsafe_base64_decode
 from django.views.decorators.cache import never_cache
 from django.views.decorators.csrf import csrf_protect
 from django.views.decorators.debug import sensitive_post_parameters
-from django.views.generic import FormView, RedirectView, TemplateView, UpdateView,DeleteView
+from django.views.generic import FormView, RedirectView, TemplateView, UpdateView, DeleteView
 from django.contrib import messages
 from django.core.mail import send_mail
 from django.template import loader
@@ -76,18 +76,20 @@ class LogoutView(RedirectView):
 
 
 class UserProfileSeeView(TemplateView):
-    template_name = 'userprofile.html'
+    template_name = 'user_profile.html'
 
     def get_context_data(self, **kwargs):
         context = super(UserProfileSeeView, self).get_context_data(**kwargs)
-        context['person']=self.request.user
+        context['person'] = self.request.user
         return context
 
+
 class UserPersonProfileSeeView(TemplateView):
-    template_name = 'personprofile.html'
+    template_name = 'person_profile.html'
+
     def get_context_data(self, **kwargs):
         context = super(UserPersonProfileSeeView, self).get_context_data(**kwargs)
-        context['person']=CustomUser.objects.get(email=kwargs.get('email'))
+        context['person'] = CustomUser.objects.get(email=kwargs.get('email'))
         return context
 
 
@@ -105,7 +107,7 @@ class UserAvatarChange(TemplateView):
         w = round(image_data['width'])
         h = round(image_data['height'])
         img = Image.open(image_file)
-        croped_img = img.crop((x, y, x+w, y+h))
+        croped_img = img.crop((x, y, x + w, y + h))
         croped_img.save(user.avatar.path)
         return JsonResponse({'state': 200,
                              'Message': 'Good',
@@ -113,7 +115,7 @@ class UserAvatarChange(TemplateView):
 
 
 class UserProfileEditView(UpdateView):
-    template_name = 'edit_userprofile.html'
+    template_name = 'user_profile_edit.html'
     form_class = ProfileEditForm
     model = CustomUser
     success_url = '/accounts/profile-edit/'
@@ -135,7 +137,7 @@ class UserProfileEditView(UpdateView):
 
 class UserProfileDeleteView(DeleteView):
     model = CustomUser
-    template_name = 'userprofiledelete.html'
+    template_name = 'user_profile_delete.html'
 
     def delete(self, request, *args, **kwargs):
         """
@@ -174,7 +176,7 @@ class UserProfileDeleteView(DeleteView):
 
 
 class UserPasswordChangeView(FormView):
-    template_name = 'passwordchange.html'
+    template_name = 'password_change.html'
     form_class = UserPasswordChangeForm
     success_url = '/accounts/profile-edit/'
 
@@ -195,7 +197,7 @@ class UserPasswordChangeView(FormView):
 
 
 class ResetPasswordView(FormView):
-    template_name = 'passwordreset.html'
+    template_name = 'password_reset.html'
     # success_url = '/accounts/information/'
     form_class = UserPasswordResetForm
 
@@ -245,7 +247,7 @@ class ResetPasswordView(FormView):
 
 
 class PasswordResetConfirmView(FormView):
-    template_name = "passwordset.html"
+    template_name = "password_set.html"
     form_class = UserSetPasswordForm
 
     def get_success_url(self):
