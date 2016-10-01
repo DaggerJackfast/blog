@@ -14,6 +14,17 @@
 {% endblock %}
 {% block content %}
     <div class="">
+    <div>
+        {% if messages %}
+                        <div class="alert alert-info">
+                            <button type="button" class="close" data-dismiss="alert">×</button>
+                            {% for message in messages %}
+                                {{ message}}
+                            {% endfor %}
+                            <a href="{% url 'article_detail' pk=article.pk %}" class="btn btn-primary">Перейти к статье</a>
+                        </div>
+                    {% endif %}
+    </div>
         <div class="panel panel-default">
             <div class="panel-heading">
                 <h4 class="text-info text-center">{{ action }} статью</h4>

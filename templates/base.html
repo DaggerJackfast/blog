@@ -1,5 +1,7 @@
 {% load staticfiles %}
 {% load thumbnail %}
+
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -42,12 +44,13 @@
                 <li {% if current_menu == 'home' %}class="active"{% endif %}>
                     <a href="{% url 'main' %}"><i class="fa fa-home" aria-hidden="true"></i> Главная</a></li>
                 <li {% if current_menu == 'new' %}class="active"{% endif %}>
-                    <a href="{% url 'new_articles' %}"><i class="fa fa-caret-square-o-up" aria-hidden="true"></i> Новое</a></li>
+                    <a href="{% url 'new_articles' %}"><i class="fa fa-caret-square-o-up" aria-hidden="true"></i> Новое</a>
+                </li>
                 <li {% if current_menu == 'popular' %}class="active"{% endif %}>
-                    <a href="{% url 'popular_articles' %}"><i class="fa fa-flag-checkered" aria-hidden="true"></i> Популярное</a></li>
+                    <a href="{% url 'popular_articles' %}"><i class="fa fa-flag-checkered" aria-hidden="true"></i>
+                        Популярное</a></li>
                 <li><a href="#"><i class="fa fa-suitcase" aria-hidden="true"></i> Архив</a></li>
                 <li><a href="#"><i class="fa fa-bookmark-o" aria-hidden="true"></i> О нас</a></li>
-
             </ul>
 
             <ul class="nav navbar-nav navbar-right">
@@ -71,8 +74,10 @@
                                 Настроить
                                 профиль</a></li>
                             <li class="divider"></li>
-                            <li><a href="{% url 'user_articles' %}"><i class="fa fa-file-text-o" aria-hidden="true"></i> Ваши статьи</a></li>
-                            <li><a href="{% url 'article_add' %}"><i class="fa fa-pencil-square-o" aria-hidden="true"></i> Написать статью</a>
+                            <li><a href="{% url 'user_articles' %}"><i class="fa fa-file-text-o" aria-hidden="true"></i>
+                                Ваши статьи</a></li>
+                            <li><a href="{% url 'article_add' %}"><i class="fa fa-pencil-square-o"
+                                                                     aria-hidden="true"></i> Написать статью</a>
                             </li>
                             <li class="divider"></li>
                             <li><a href="{% url 'logout' %}"><i class="fa fa-sign-out" aria-hidden="true"></i> Выйти</a>

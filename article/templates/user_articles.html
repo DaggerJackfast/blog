@@ -8,8 +8,7 @@
         </h2>
     </div>
     {% if not object_list %}
-        <div class="alert alert-info alert-dismissable">
-                        <a class="panel-close close" data-dismiss="alert">×</a>
+        <div class="alert alert-info">
                         <i class="fa fa-coffee"></i>
                         У вас нет публикаций. Хотите добавить статью. <a href="{% url 'article_add' %}" class="btn btn-primary">Добавить статью.</a>
                     </div>

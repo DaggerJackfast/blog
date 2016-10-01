@@ -13,7 +13,7 @@ urlpatterns = [
     url(r'^(?P<pk>\d+)/like/$', login_required(ArticleLikeView.as_view()), name='article_like'),
     url(r'^(?P<pk>\d+)/comment/$', login_required(CommentView.as_view()), name='article_comment'),
     url(r'^tags/(?P<pk>\d+)/$', TagView.as_view(), name='tags'),
-    url(r'^artice_add/$', login_required(ArticleAddView.as_view()), name='article_add'),
-    url(r'^artice_edit/(?P<pk>\d+)/$', login_required(ArticleUserEditView.as_view()), name='article_user_edit')
+    url(r'^article_add/$', login_required(ArticleAddView.as_view()), name='article_add'),
+    url(r'^article_edit/(?P<pk>\d+)/$', login_required(ArticleUserEditView.as_view()), name='article_user_edit')
 
 ]

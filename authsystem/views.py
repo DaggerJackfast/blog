@@ -80,6 +80,14 @@ class UserProfileSeeView(TemplateView):
 
     def get_context_data(self, **kwargs):
         context = super(UserProfileSeeView, self).get_context_data(**kwargs)
+        context['person']=self.request.user
+        return context
+
+class UserPersonProfileSeeView(TemplateView):
+    template_name = 'personprofile.html'
+    def get_context_data(self, **kwargs):
+        context = super(UserPersonProfileSeeView, self).get_context_data(**kwargs)
+        context['person']=CustomUser.objects.get(email=kwargs.get('email'))
         return context
 
 

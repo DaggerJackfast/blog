@@ -3,7 +3,7 @@
 {% load thumbnail %}
 {% block title %}{{ object.title }}{% endblock %}
 {% block content %}
-    <h4>Автор: {{ object.author.get_official_name }}</h4>
+    <h4>Автор: <a href="{% url 'profile_person' email=object.author.email %}">{{ object.author.get_official_name }}</a></h4>
     <h5> <em>Дата публикации: {{ object.date_created }}</em></h5>
     <h2>{{ object.title }}</h2>
     <p>Теги:

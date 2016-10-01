@@ -6,7 +6,7 @@
         {% block page_title %}
         {% endblock %}
         {% for article in object_list %}
-            <h6>Автор: {{ article.author.get_official_name }}, Дата публикации: {{ article.date_created }} </h6>
+            <h6>Автор: <a href="{% url 'profile_person' email=article.author.email %}">{{ article.author.get_official_name }}</a>, Дата публикации: {{ article.date_created }} </h6>
             <h3><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a> {% block article_edit %}{% endblock %}</h3>
             <p>Теги:
                 {% for tag in article.tags.all %}

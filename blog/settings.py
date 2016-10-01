@@ -40,14 +40,16 @@ INSTALLED_APPS = [
     'ckeditor_uploader',
     'article',
     'authsystem',
-    # 'loginsys'
     'customuser',
+
 
 ]
 AUTH_USER_MODEL = 'customuser.CustomUser'
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
+
+SITE_ID = 1
 
 MANAGERS = (('admin', 'jackfast.dagger@yandex.ru'))
 EMAIL_HOST = 'smtp.yandex.ru'

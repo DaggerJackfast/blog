@@ -48,7 +48,6 @@ class ArticleListView(ListView):
 
     def get_context_data(self, **kwargs):
         context = super(ArticleListView, self).get_context_data(**kwargs)
-        context['user'] = self.request.user
         context['current_menu'] = self.current_menu
         return context
 
@@ -141,7 +140,6 @@ class ArticleAddView(FormView, ArticleActionMixin):
         new_article = form.save(commit=False)
         new_article.author = self.request.user
         new = form.save()
-
         return super(ArticleAddView, self).form_valid(form)
 
     def get_success_url(self):
@@ -156,7 +154,7 @@ class ArticleUserEditView(UpdateView, ArticleActionMixin):
     action = 'Редактировать'
 
     def get_success_url(self):
-        return reverse('article_detail', kwargs={'pk': self.kwargs.get('pk')})
+        return reverse('article_user_edit', kwargs={'pk': self.kwargs.get('pk')})
 
     def form_valid(self, form, **kwargs):
         f = form.save()
