@@ -1,6 +1,9 @@
 {% extends 'articles.html' %}
 {% load staticfiles %}
 {% load thumbnail %}
+{% block title %}
+    Категория {{ page_title }}
+{% endblock %}
 {% block page_title %}
     <div class="page-header page-title">
         <h2>

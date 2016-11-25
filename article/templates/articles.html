@@ -6,8 +6,11 @@
         {% block page_title %}
         {% endblock %}
         {% for article in object_list %}
-            <h6>Автор: <a href="{% url 'profile_person' email=article.author.email %}">{{ article.author.get_official_name }}</a>, Дата публикации: {{ article.date_created }} </h6>
-            <h3><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a> {% block article_edit %}{% endblock %}</h3>
+            <h6>Автор: <a
+                    href="{% url 'profile_person' email=article.author.email %}">{{ article.author.get_official_name }}</a>,
+                Дата публикации: {{ article.date_created }} </h6>
+            <h3><a href="{% url 'article_detail' pk=article.pk %}">{{ article.title }}</a>
+                {% block article_edit %}{% endblock %}</h3>
             <p>Теги:
                 {% for tag in article.tags.all %}
                     <span class="label label-primary">
@@ -19,10 +22,13 @@
                     {% endif %}
                 {% endfor %}</p>
             <p>{{ article.text|safe|slice:"300" }}...<a href="{% url 'article_detail' pk=article.pk %}"
-                                                         class="btn btn-xs btn-primary text-bold">Читать далее</a></p>
+                                                        class="btn btn-xs btn-primary text-bold">Читать далее</a></p>
 
-            <p><a class='like-link' href="{% url 'article_like' pk=article.pk %}" onclick="return false;"><i
-                    class="fa fa-thumbs-o-up" aria-hidden="true"></i></a> <span>{{ article.likes }}</span></p>
+            <p {% if not user.is_authenticated %} data-toggle="tooltip"
+                                                  title="Вам необходимо зарегистрироваться"
+            {% endif %}>
+                <a class='like-link' href="{% url 'article_like' pk=article.pk %}" onclick="return false;">
+                    <i class="fa fa-thumbs-o-up" aria-hidden="true"></i></a>&nbsp<span>{{ article.likes }}</span></p>
             <hr/>
         {% endfor %}
     </div>
@@ -63,8 +69,6 @@
     </div>
 {% endblock content %}
 {% block additional_js %}
-    <script type="text/javascript" src="{% static "js/vendor/jquery.js" %}">
-    </script>
     <script type="text/javascript" src="{% static "js/articles.js" %}">
     </script>
 {% endblock %}
