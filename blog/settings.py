@@ -133,6 +133,9 @@ DATABASES = {
         'USER': 'djangouser',
         'PASSWORD': 'admin123',
         'PORT': '',
+		'OPTIONS': {
+   'init_command': 'SET default_storage_engine=INNODB',
+}
     }
 }
 

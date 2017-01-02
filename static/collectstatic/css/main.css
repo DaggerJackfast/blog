@@ -47,6 +47,10 @@ padding-left: 15px;
 margin: 20px 0;
 }
 
+div.django-ckeditor-widget{
+    width: 100%;
+}
+
 #comment-form {
     margin-bottom: 10px;
 }

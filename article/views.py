@@ -1,14 +1,12 @@
-from datetime import date
-
 from django.contrib import messages
 from django.http import JsonResponse
+from django.shortcuts import redirect
 from django.urls import reverse
 from django.views.generic import FormView
 from django.views.generic import TemplateView, ListView
 from django.views.generic import UpdateView
 from django.views.generic.detail import DetailView
 from django.views.generic.edit import FormMixin
-
 from article.forms import CommentForm, ArticleForm
 from article.models import Article, Comment, LikeUser, Tag
 
@@ -17,12 +15,12 @@ class ArticleLikeView(TemplateView):
     def get(self, request, *args, **kwargs):
         article_id = kwargs.get('pk')
         user = request.user
-        likeuser = LikeUser.objects.filter(article_id=article_id, user=user)
-        if likeuser.exists():
+        user_like = LikeUser.objects.filter(article_id=article_id, user=user)
+        if user_like.exists():
             article = Article.objects.get(pk=article_id)
             article.likes -= 1
             article.save()
-            like = likeuser.first()
+            like = user_like.first()
             like.delete()
         else:
             article = Article.objects.get(pk=article_id)
@@ -32,7 +30,7 @@ class ArticleLikeView(TemplateView):
             like.article = article
             like.user = user
             like.save()
-        response = {'likenumber': article.likes}
+        response = {'like_count': article.likes}
         return JsonResponse(response)
 
 
@@ -90,8 +88,8 @@ class ArticleDetailView(DetailView):
 class CommentView(TemplateView):
     def get(self, request, *args, **kwargs):
         comment = Comment.objects.filter(article_id=kwargs.get('pk')).values_list('user', 'text')
-        jsonresponse = JsonResponse({'result': list(comment)})
-        return jsonresponse
+        json_response = JsonResponse({'result': list(comment)})
+        return json_response
 
     def post(self, request, *args, **kwargs):
         if 'pause' not in request.session:
@@ -102,7 +100,7 @@ class CommentView(TemplateView):
                 comment.user = self.request.user
                 comment_form.save()
                 return JsonResponse({'status': 'success',
-                                     'user': self.request.user.get_official_name(),})
+                                     'user': self.request.user.get_official_name(), })
             else:
                 return JsonResponse({'status': 'error'})
 
@@ -146,12 +144,25 @@ class ArticleAddView(FormView, ArticleActionMixin):
         return reverse('main')
 
 
+class InfoView(TemplateView):
+    template_name = 'article_info.html'
+
+
 class ArticleUserEditView(UpdateView, ArticleActionMixin):
     template_name = 'article_form.html'
     form_class = ArticleForm
     model = Article
     title = 'Редактирование статьи'
     action = 'Редактировать'
+
+    def get(self, request, *args, **kwargs):
+        article = self.get_object()
+        if article.is_author(request.user):
+            return super(ArticleUserEditView, self).get(request, *args, **kwargs)
+        else:
+            messages.add_message(request=self.request, level=messages.ERROR,
+                                 message='У вас нет прав на изменение данной статьи')
+            return redirect('article_info')
 
     def get_success_url(self):
         return reverse('article_user_edit', kwargs={'pk': self.kwargs.get('pk')})

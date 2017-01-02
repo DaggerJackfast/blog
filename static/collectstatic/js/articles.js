@@ -5,7 +5,7 @@ $(document).ready(function () {
             type: "GET",
             url: this.toString(),
             success: function (data) {
-                span.text(data.likenumber);
+                span.text(data.like_count);
             }
         });
     });

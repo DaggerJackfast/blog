@@ -36,12 +36,12 @@ class Tag(models.Model):
 class Article(models.Model):
     title = models.CharField(max_length=200, verbose_name='Название')
     text = fields.RichTextUploadingField(verbose_name='Текст')
-    date_created = models.DateTimeField(verbose_name='Дата публикации',auto_now_add=True)
-    date_updated=models.DateTimeField(verbose_name='Дата изменения',auto_now=True)
+    date_created = models.DateTimeField(verbose_name='Дата публикации', auto_now_add=True)
+    date_updated = models.DateTimeField(verbose_name='Дата изменения', auto_now=True)
     likes = models.IntegerField(default=0, verbose_name='Лайки')
-    author = models.ForeignKey(CustomUser, verbose_name='Автор',related_name='article_author')
+    author = models.ForeignKey(CustomUser, verbose_name='Автор', related_name='article_author')
     tags = models.ManyToManyField(Tag, verbose_name='Теги', blank=True)
-    user = models.ManyToManyField(CustomUser, through='LikeUser', through_fields=('article', 'user'))
+    like_user = models.ManyToManyField(CustomUser, through='LikeUser', through_fields=('article', 'user'))
 
     class Meta:
         db_table = 'articles'
@@ -50,6 +50,9 @@ class Article(models.Model):
 
     def __str__(self):
         return self.title
+
+    def is_author(self, user):
+        return self.author == user
 
 
 class LikeUser(models.Model):
