@@ -1,6 +1,7 @@
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG=False
+from .base import *
+
+DEBUG = False
 ALLOWED_HOSTS = []
 
 MANAGERS = (('admin', 'jackfast.dagger@yandex.ru'))
@@ -18,9 +19,9 @@ DATABASES = {
         'USER': 'djangouser',
         'PASSWORD': 'admin123',
         'PORT': '',
-		'OPTIONS': {
-   'init_command': 'SET default_storage_engine=INNODB',
-}
+        'OPTIONS': {
+            'init_command': 'SET default_storage_engine=INNODB',
+        }
     }
 }
 

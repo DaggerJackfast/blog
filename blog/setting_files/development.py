@@ -1,7 +1,7 @@
 import os
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-DEBUG=True
+from .base import *
 
+DEBUG = True
 
 DATABASES = {
     'default': {
@@ -10,9 +10,9 @@ DATABASES = {
         'USER': 'djangouser',
         'PASSWORD': 'admin123',
         'PORT': '',
-		'OPTIONS': {
-   'init_command': 'SET default_storage_engine=INNODB',
-}
+        'OPTIONS': {
+            'init_command': 'SET default_storage_engine=INNODB',
+        }
     }
 }
 
@@ -23,5 +23,6 @@ EMAIL_HOST_PASSWORD = 'admin123'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'admin@gmail.com'
+
 EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
 EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'media/temp/email/')
