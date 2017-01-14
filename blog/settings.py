@@ -10,6 +10,11 @@ For the full list of settings and their values, see
 https://docs.djangoproject.com/en/1.9/ref/settings/
 """
 
+try:
+    from blog.setting_files.development import *
+except ImportError:
+    from blog.setting_files.production import *
+
 import os
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
@@ -41,33 +46,14 @@ INSTALLED_APPS = [
     'article',
     'authsystem',
     'customuser',
-
-
 ]
+
 AUTH_USER_MODEL = 'customuser.CustomUser'
 AUTHENTICATION_BACKENDS = (
     "django.contrib.auth.backends.ModelBackend",
 )
 
 SITE_ID = 1
-
-MANAGERS = (('admin', 'jackfast.dagger@yandex.ru'))
-EMAIL_HOST = 'smtp.yandex.ru'
-EMAIL_HOST_USER = 'jackfast.dagger@yandex.ru'
-EMAIL_HOST_PASSWORD = 'adminder123456789'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-DEFAULT_FROM_EMAIL = 'jackfast.dagger@yandex.ru'
-# EMAIL_USE_TLS = True
-# DEFAULT_FROM_EMAIL = 'admin@gmail.com'
-# SERVER_EMAIL = 'admin@gmail.com'
-# EMAIL_HOST = 'smtp.gmail.com'
-# EMAIL_PORT = 587
-# EMAIL_HOST_USER = 'admin@gmail.com'
-# EMAIL_HOST_PASSWORD = 'admin123##'
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_BACKEND = 'django.core.mail.backends.filebased.EmailBackend'
-EMAIL_FILE_PATH = os.path.join(BASE_DIR, 'media/temp/email/')
 
 MIDDLEWARE_CLASSES = [
     'django.middleware.security.SecurityMiddleware',
@@ -125,19 +111,6 @@ WSGI_APPLICATION = 'blog.wsgi.application'
 
 # Database
 # https://docs.djangoproject.com/en/1.9/ref/settings/#databases
-
-DATABASES = {
-    'default': {
-        'ENGINE': 'django.db.backends.mysql',
-        'NAME': 'blog',
-        'USER': 'djangouser',
-        'PASSWORD': 'admin123',
-        'PORT': '',
-		'OPTIONS': {
-   'init_command': 'SET default_storage_engine=INNODB',
-}
-    }
-}
 
 # Password validation
 # https://docs.djangoproject.com/en/1.9/ref/settings/#auth-password-validators
