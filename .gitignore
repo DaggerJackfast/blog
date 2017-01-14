@@ -12,4 +12,4 @@ application.macosx
 /.idea
 db.sqlite3
 tasks.txt
-
+/blog/setting_files/development.py
