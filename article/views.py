@@ -87,7 +87,9 @@ class ArticleDetailView(DetailView):
 
 class CommentView(TemplateView):
     def get(self, request, *args, **kwargs):
-        comment = Comment.objects.filter(article_id=kwargs.get('pk')).values_list('user', 'text')
+        comment = Comment.objects.filter(article_id=kwargs.get('pk')).values_list('user__firstname', 'user__lastname',
+                                                                                  'text')
+        comment = map(lambda x: ("{0} {1}".format(x[0], x[1]), x[2]), comment)
         json_response = JsonResponse({'result': list(comment)})
         return json_response
 
