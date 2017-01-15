@@ -13,3 +13,4 @@ application.macosx
 db.sqlite3
 tasks.txt
 /blog/setting_files/development.py
+/static/collectstatic/

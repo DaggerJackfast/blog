@@ -1,0 +1,29 @@
+{% extends 'base.html' %}
+{% load staticfiles %}
+{% block navbar_links %}
+{% endblock %}
+{% block title %}
+    Информация
+{% endblock %}
+{% block content %}
+    <div class="container">
+        <div class="panel panel-default">
+            <div class="panel-heading">Информационное сообщение</div>
+            <div class="panel-body">
+                {% if messages %}
+                    <div class="alert alert-warning alert-dismissable">
+                        <a class="panel-close close" data-dismiss="alert">×</a>
+                        <ul>
+                            {% for message in messages %}
+                                <li {% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+                            {% endfor %}
+                        </ul>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+{% endblock %}
+
+
+
