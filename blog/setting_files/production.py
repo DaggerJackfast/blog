@@ -6,7 +6,6 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 
 ALLOWED_HOSTS = ['*']
 
-
 MANAGERS = (('admin', 'jackfast.dagger@yandex.ru'))
 EMAIL_HOST = 'smtp.yandex.ru'
 EMAIL_HOST_USER = 'jackfast.dagger@yandex.ru'
@@ -14,9 +13,6 @@ EMAIL_HOST_PASSWORD = 'adminder123456789'
 EMAIL_PORT = 587
 EMAIL_USE_TLS = True
 DEFAULT_FROM_EMAIL = 'jackfast.dagger@yandex.ru'
-
-
-
 
 DATABASES = {
     'default': {
@@ -29,6 +25,7 @@ DATABASES = {
 }
 
 import dj_database_url
+
 db_from_env = dj_database_url.config()
 DATABASES['default'].update(db_from_env)
 
