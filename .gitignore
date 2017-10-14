@@ -9,8 +9,13 @@ application.macosx
 
 # Created by .ignore support plugin (hsz.mobi)
 *.pyc
-/.idea
+/.idea/
 db.sqlite3
 tasks.txt
-/blog/setting_files/development.py
-/static/collectstatic/
+/web-app/main/setting_files/development.py
+/web-app/collectstatic/
+/web-app/media/
+/venv/
+/virtualenv/
+*/node_modules/
+*.log

@@ -1,0 +1,45 @@
+version: '3.3'
+
+services:
+  db:
+    restart: always
+    image: postgres:10-alpine
+    env_file: .env
+    environment:
+      POSTGRES_DB: ${DATABASE_NAME}
+      POSTGRES_USER: ${DATABASE_USER}
+      POSTGRES_PASSWORD: ${DATABASE_PASSWORD}
+    volumes:
+      - /app/postgres:/var/lib/postgresql/data
+      - /app/backups:/app/backups
+
+  web-app:
+    image: jackfast/web-app:${TAG}
+    build: ./web-app
+    env_file: .env
+    environment:
+      DATABASE_HOST: db
+    depends_on:
+      - db
+    links:
+      - db
+    volumes:
+      - /app/media:/app/media
+      - /app/collectstatic:/app/collectstatic
+      - /app/logs:/app/logs
+
+  nginx:
+    restart: always
+    image: jackfast/nginx:${TAG}
+    build: ./nginx
+    depends_on:
+      - web-app
+    links:
+      - web-app
+    volumes:
+     - /app/media:/app/media
+     - /app/collectstatic:/app/collectstatic
+     - /app/logs/nginx:/var/log/nginx
+    ports:
+      - 80:80
+      - 443:443

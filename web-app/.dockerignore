@@ -1,0 +1,3 @@
+main/settings_local.py
+collectstatic/
+media/
